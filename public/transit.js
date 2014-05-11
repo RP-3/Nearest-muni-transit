@@ -52,7 +52,16 @@ var findDistance = function(group){
 
 //find closest x vehicles from given group
 var findClosest = function(group, count){
-	
+	var result = [];
+
+	for (key in group){ result.push(group[key]); }
+
+	result.sort(function(a, b){
+		if(a.distance < b.distance){ return -1; }
+		if(a.distance > b.distance){ return 1; }
+	});
+
+	return result.slice(0, count);
 }
 
 
