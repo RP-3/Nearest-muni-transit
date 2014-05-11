@@ -1,3 +1,5 @@
+//for details of geometric calculations, see http://www.movable-type.co.uk/scripts/latlong.html
+
 var lat, lon;
 var R = 6371; // earth radius in km
 var toRadians = (Math.PI/180);
@@ -10,12 +12,13 @@ window.onload=function(){
       lon = pos.coords.longitude;
     });
   }else{
-    alert("Geolocation is either not supported by this browser or has been disabled.");
+    alert("This widget won't work. Either you or your browser have/has disabled geolocation");
   }
 }
 
 var completeTransitSet;
 
+//set up firebase listener
 var myDataRef = new Firebase('https://publicdata-transit.firebaseio.com/sf-muni');
 myDataRef.on('value', function(snapshot){
   console.log('updated');
@@ -50,6 +53,22 @@ var findDistance = function(group){
 	}
 }
 
+//add bearing property to group
+var findBearing = function(group){
+	for(key in group){
+		var φ1 = (group[key].lat) * toRadians;
+		var φ2 = lat * toRadians;
+		var Δφ = (lat - group[key].lat) * toRadians;
+		var Δλ = (lon - group[key].lon) * toRadians;
+		//varying value! lookup orthodrome formula
+		var y = Math.sin(lon-group[key].lon) * Math.cos(lat);
+		var x = Math.cos(group[key].lat)*Math.sin(lat) - 
+		Math.sin(group[key].lat)*Math.cos(lat)*Math.cos(lon-group[key].lon);
+
+		group[key].brng = Math.atan2(y, x)*(1/toRadians);
+	}
+}
+
 //find closest x vehicles from given group
 var findClosest = function(group, count){
 	var result = [];
@@ -61,7 +80,9 @@ var findClosest = function(group, count){
 		if(a.distance > b.distance){ return 1; }
 	});
 
-	return result.slice(0, count);
+	result = result.slice(0, count);
+	findBearing(result);
+	return result;
 }
 
 
