@@ -85,9 +85,40 @@ var findClosest = function(group, count){
 	return result;
 }
 
+//format input
+var format = function(collection){
+	var output = [];
+	for (var i=0; i<collection.length; i++){
+		element = {};
+		element.label = collection[i].dirTag;
+		element.value = collection[i].distance;
+		output.push(element);
+	}
+	return output;
+}
+
+
+
+
+
+
+
+
 //******General Update Pattern*********//
 
-var update = function(data){
+
+
+
+
+
+
+
+var update = function(group, count){
+
+	var dataSet = filterFor(group);
+	findDistance(dataSet);
+	vehicleData = findClosest(dataSet, 10);
+	vehicleData = format(vehicleData);
 
 	var svg = d3.select("body")
 		.append("svg")
@@ -122,27 +153,20 @@ var update = function(data){
 
 	var key = function(d){ return d.data.label; };
 
-	var color = d3.scale.category20()
-		.domain(["Lorem ipsum", "dolor sit", "amet", "consectetur", "adipisicing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt"])
-		//.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
-	function randomData (){
-		var labels = color.domain();
-		return labels.map(function(label){
-			return { label: label, value: Math.random() }
-		}).filter(function() {
-			return Math.random() > .5;
-		}).sort(function(a,b) {
-			return d3.ascending(a.label, b.label);
-		});
+	console.log(vehicleData);
+	var initialScaleData = [];
+	var total = 0;
+	for (var i=0; i<vehicleData.length; i++){
+		initialScaleData.push(vehicleData[i].value);
+		total = total + vehicleData[i].value;
 	}
 
-	change(randomData());
+	var maxInitialScaleData = d3.max(initialScaleData);
 
-	d3.select(".randomize")
-		.on("click", function(){
-			change(randomData());
-		});
+	var color = d3.scale.category20()
+		.domain([0,maxInitialScaleData])
+
+	change(vehicleData);
 
 	function mergeWithFirstEqualZero(first, second){
 		var secondSet = d3.set(); second.forEach(function(d) { secondSet.add(d.label); });
