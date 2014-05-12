@@ -92,7 +92,7 @@ var format = function(data){
 		var temp = {};
 		temp.value = data[i].distance;
 		temp.label = data[i].routeTag + " : " + 
-					(data[i].distance*1000).toFixed(2) + 
+					(data[i].distance*1000).toFixed(0) + 
 					"m; " + data[i].heading+"°";
 		result.push(temp);
 	}
@@ -140,15 +140,15 @@ var outerArc = d3.svg.arc()
 	.innerRadius(radius * 0.9)
 	.outerRadius(radius * 0.9);
 
-svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")", "rotate(45 50 50)");
 
 var key = function(d){ return d.data.label; };
 
 var color = d3.scale.ordinal()
-	.domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-	.range(["#5D8AA8", "#72A0C1", "#E32636", "#C46210", "#3B7A57", 
-		"#FFBF00", "#FF7E00", "#3B444B", "#E9D66B", "#87A96B", 
-		"#FF9966", "#A52A2A"]);
+	.domain([1, 2, 3, 4, 5])
+		//, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+	.range(["#5D8AA8", "#72A0C1", "#E32636", "#C46210", "#3B7A57"])
+		//, "#FFBF00", "#FF7E00", "#3B444B", "#E9D66B", "#87A96B", "#FF9966", "#A52A2A"]);
 
 function randomData (){
 	var labels = color.domain();
